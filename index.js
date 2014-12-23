@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var Keyboard = require('game-keyboard');
 var keyMap = require("game-keyboard/key_map")["US"];
 var PointerTrap = require('pointer-trap-relative');
@@ -5,19 +6,27 @@ var Mousewheel = require('input-mousewheel');
 function FPSCameraController(camera, element, options) {
 	this.camera = camera;
 	this.keyboard = new Keyboard(keyMap);
-	this.movementSpeed = .1;
-	this.rotationSpeed = .001;
-	this.minFov = 10;
-	this.maxFov = 100;
+	options = _.merge({
+		movementSpeed: .1,
+		rotationSpeed: .001,
+		minFov: 10,
+		maxFov: 100,
+		zoomSpeed: .001
+	}, options || {});
+	_.assign(this, options);
+
 	this.pointerTrap = new PointerTrap(element);
 	var _this = this;
+
+	//mouse
 	this.pointerTrap.on('data', function(pos) {
 		_this.camera.rotateY(pos.x * -_this.rotationSpeed);
 		_this.camera.rotateX(pos.y * -_this.rotationSpeed);
 	})
-	var zoomSpeed = .1;
+
+	//mouse wheel
 	Mousewheel.onMouseWheelSignal.add(function(val) {
-		var zoom = val * .001;
+		var zoom = val * _this.zoomSpeed;
 		var fov = _this.camera.fov;
 		fov *= (1+zoom);
 		fov = Math.min(_this.maxFov, Math.max(_this.minFov, fov))
