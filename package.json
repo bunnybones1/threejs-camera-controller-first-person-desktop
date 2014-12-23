@@ -1,0 +1,38 @@
+{
+  "name": "threejs-camera-controller-first-person-desktop",
+  "version": "1.0.0",
+  "description": "A camera controller for web-browser friendly FPS controls using a keyboard and mouse.",
+  "main": "index.js",
+  "license": "MIT",
+  "author": {
+    "name": "Tomasz Dysinski",
+    "email": "oz@bunnybones.com",
+    "url": "https://github.com/bunnybones1"
+  },
+  "dependencies": {
+    "game-keyboard": "0.0.0",
+    "input-mousewheel": "^1.0.0",
+    "pointer-lock-chrome-tolerant": "0.0.6",
+    "pointer-trap-relative": "^1.1.2"
+  },
+  "devDependencies": {
+    "loadandrunscripts": "^1.0.0",
+    "threejs-managed-view": "^2.4.0"
+  },
+  "scripts": {
+    "test": "beefy test.js --live --open"
+  },
+  "keywords": [
+    "threejs",
+    "spline",
+    "loop"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bunnybones1/threejs-camera-controller-first-person-desktop.git"
+  },
+  "homepage": "https://github.com/bunnybones1/threejs-camera-controller-first-person-desktop",
+  "bugs": {
+    "url": "https://github.com/bunnybones1/threejs-camera-controller-first-person-desktop/issues"
+  }
+}

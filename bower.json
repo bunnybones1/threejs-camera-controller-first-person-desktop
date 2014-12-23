@@ -1,0 +1,18 @@
+{
+  "name": "threejs-camera-controller-first-person-desktop",
+  "version": "1.0.0",
+  "authors": [
+    "Tomasz Dysinski <tom@jam3.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "three.js": "*"
+  }
+}
