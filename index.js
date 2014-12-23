@@ -8,12 +8,14 @@ function FPSCameraController(camera, element, options) {
 	this.keyboard = new Keyboard(keyMap);
 	options = _.merge({
 		movementSpeed: .1,
+		movementRunSpeedScale: 2.5,
 		rotationSpeed: .001,
 		minFov: 10,
 		maxFov: 100,
 		zoomSpeed: .001
 	}, options || {});
 	_.assign(this, options);
+	this.movementSpeedScale = 1;
 
 	this.pointerTrap = new PointerTrap(element);
 	var _this = this;
@@ -37,17 +39,22 @@ function FPSCameraController(camera, element, options) {
 
 FPSCameraController.prototype = {
 	update: function() {
+		if(this.keyboard.isPressed('shift')) {
+			this.movementSpeedScale = this.movementRunSpeedScale;
+		} else {
+			this.movementSpeedScale = 1;
+		}
 		if(this.keyboard.isPressed('a')) {
-			this.camera.translateX(-this.movementSpeed);
+			this.camera.translateX(-this.movementSpeed * this.movementSpeedScale);
 		}
 		if(this.keyboard.isPressed('d')) {
-			this.camera.translateX(this.movementSpeed);
+			this.camera.translateX(this.movementSpeed * this.movementSpeedScale);
 		}
 		if(this.keyboard.isPressed('w')) {
-			this.camera.translateZ(-this.movementSpeed);
+			this.camera.translateZ(-this.movementSpeed * this.movementSpeedScale);
 		}
 		if(this.keyboard.isPressed('s')) {
-			this.camera.translateZ(this.movementSpeed);
+			this.camera.translateZ(this.movementSpeed * this.movementSpeedScale);
 		}
 		if(this.keyboard.isPressed('left')) {
 			this.camera.rotateY(this.rotationSpeed);
