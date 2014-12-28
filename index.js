@@ -30,6 +30,9 @@ function FPSCameraController(camera, element, options) {
 		}
 	})
 
+	this.onPointerLockAttainSignal = this.pointerTrap.onAttainSignal;
+	this.onPointerLockReleaseSignal = this.pointerTrap.onReleaseSignal;
+
 	//mouse wheel
 	Mousewheel.onMouseWheelSignal.add(function(val) {
 		var zoom = val * _this.zoomSpeed;

@@ -28,6 +28,13 @@ var onReady = function() {
 
 	var fpsController = new CameraControllerFPS(view.camera, view.canvasContainer);
 
+	fpsController.onPointerLockAttainSignal.add(function(){
+		console.log('attained pointerlock');
+	})
+	fpsController.onPointerLockReleaseSignal.add(function(){
+		console.log('released pointerlock');
+	})
+
 	view.renderManager.onEnterFrame.add(function() {
 		fpsController.update();
 	})
