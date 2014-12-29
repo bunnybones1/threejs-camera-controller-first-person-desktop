@@ -13,23 +13,34 @@ function FPSCameraController(camera, element, options) {
 		minFov: 10,
 		maxFov: 100,
 		zoomSpeed: .001,
-		yUp: true
+		yUp: true,
+		rotateActive: false,
+		rotateActiveOnlyInPointerLock: true
 	}, options || {});
 	_.assign(this, options);
 	this._movementSpeedScale = 1;
+	if(!this.rotateActiveOnlyInPointerLock) this.rotateActive = true;
 
 	this.pointerTrap = new PointerTrap(element);
 	var _this = this;
 
 	//mouse
 	this.pointerTrap.on('data', function(pos) {
-		_this.camera.rotateY(pos.x * -_this.rotationSpeed);
-		_this.camera.rotateX(pos.y * -_this.rotationSpeed);
-		if(_this.yUp) {
-			_this.uprightCamera();
+		if(_this.rotateActive) {
+			_this.camera.rotateY(pos.x * -_this.rotationSpeed);
+			_this.camera.rotateX(pos.y * -_this.rotationSpeed);
+			if(_this.yUp) {
+				_this.uprightCamera();
+			}
 		}
 	})
 
+	this.pointerTrap.onAttainSignal.add(function() {
+		if(_this.rotateActiveOnlyInPointerLock) _this.rotateActive = true;
+	})
+	this.pointerTrap.onReleaseSignal.add(function() {
+		if(_this.rotateActiveOnlyInPointerLock) _this.rotateActive = false;
+	})
 	this.onPointerLockAttainSignal = this.pointerTrap.onAttainSignal;
 	this.onPointerLockReleaseSignal = this.pointerTrap.onReleaseSignal;
 
