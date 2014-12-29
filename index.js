@@ -69,6 +69,12 @@ FPSCameraController.prototype = {
 		if(this.keyboard.isPressed('s')) {
 			this.camera.translateZ(this.movementSpeed * this._movementSpeedScale);
 		}
+		if(this.keyboard.isPressed('e')) {
+			this.camera.position.y += (this.movementSpeed * this._movementSpeedScale);
+		}
+		if(this.keyboard.isPressed('c')) {
+			this.camera.position.y += (-this.movementSpeed * this._movementSpeedScale);
+		}
 		if(this.keyboard.isPressed('left')) {
 			this.camera.rotateY(this.rotationSpeed);
 			rotated = true;
