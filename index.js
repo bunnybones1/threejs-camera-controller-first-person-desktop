@@ -9,13 +9,14 @@ function FPSCameraController(camera, element, options) {
 	options = _.merge({
 		movementSpeed: .1,
 		movementRunSpeedScale: 2.5,
-		rotationSpeed: .001,
+		rotationSpeed: .005,
 		minFov: 10,
 		maxFov: 100,
 		zoomSpeed: .001,
 		yUp: true,
 		rotateActive: false,
-		rotateActiveOnlyInPointerLock: true
+		rotateActiveOnlyInPointerLock: true,
+		arrowKeysRotate: false,
 	}, options || {});
 	_.assign(this, options);
 	this._movementSpeedScale = 1;
@@ -83,27 +84,29 @@ FPSCameraController.prototype = {
 		if(this.keyboard.isPressed('e')) {
 			this.camera.position.y += (this.movementSpeed * this._movementSpeedScale);
 		}
-		if(this.keyboard.isPressed('c')) {
+		if(this.keyboard.isPressed('q')) {
 			this.camera.position.y += (-this.movementSpeed * this._movementSpeedScale);
 		}
-		if(this.keyboard.isPressed('left')) {
-			this.camera.rotateY(this.rotationSpeed);
-			rotated = true;
-		}
-		if(this.keyboard.isPressed('right')) {
-			this.camera.rotateY(-this.rotationSpeed);
-			rotated = true;
-		}
-		if(this.keyboard.isPressed('up')) {
-			this.camera.rotateX(this.rotationSpeed);
-			rotated = true;
-		}
-		if(this.keyboard.isPressed('down')) {
-			this.camera.rotateX(-this.rotationSpeed);
-			rotated = true;
-		}
-		if(rotated && this.yUp) {
-			this.uprightCamera();
+		if(this.arrowKeysRotate) {
+			if(this.keyboard.isPressed('left')) {
+				this.camera.rotateY(this.rotationSpeed);
+				rotated = true;
+			}
+			if(this.keyboard.isPressed('right')) {
+				this.camera.rotateY(-this.rotationSpeed);
+				rotated = true;
+			}
+			if(this.keyboard.isPressed('up')) {
+				this.camera.rotateX(this.rotationSpeed);
+				rotated = true;
+			}
+			if(this.keyboard.isPressed('down')) {
+				this.camera.rotateX(-this.rotationSpeed);
+				rotated = true;
+			}
+			if(rotated && this.yUp) {
+				this.uprightCamera();
+			}
 		}
 	},
 	uprightCamera: function() {
