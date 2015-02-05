@@ -1,120 +1,140 @@
-var _ = require('lodash');
 var Keyboard = require('game-keyboard');
 var keyMap = require("game-keyboard/key_map")["US"];
 var PointerTrap = require('pointer-trap-relative');
 var Mousewheel = require('input-mousewheel');
+var defined = require('defined');
 function FPSCameraController(camera, element, options) {
-	this.camera = camera;
-	this.keyboard = new Keyboard(keyMap);
-	options = _.merge({
-		movementSpeed: .1,
-		movementRunSpeedScale: 2.5,
-		rotationSpeed: .005,
-		minFov: 10,
-		maxFov: 100,
-		zoomSpeed: .001,
-		yUp: true,
-		rotateActive: false,
-		rotateActiveOnlyInPointerLock: true,
-		arrowKeysRotate: false,
-	}, options || {});
-	_.assign(this, options);
-	this._movementSpeedScale = 1;
-	if(!this.rotateActiveOnlyInPointerLock) this.rotateActive = true;
+	options = options || {};
+	var _camera = camera;
+	var _keyboard = new Keyboard(keyMap);
 
-	this.pointerTrap = new PointerTrap(element);
-	var _this = this;
+	var _onChangedCallback = options.onChangedCallback;
+	var _movementSpeed = defined(options.movementSpeed, .1);
+	var _movementRunSpeedScale = defined(options.movementRunSpeedScale, 2.5);
+	var _rotationSpeed = defined(options.rotationSpeed, .005);
+	var _minFov = defined(options.minFov, 10);
+	var _maxFov = defined(options.maxFov, 100);
+	var _zoomSpeed = defined(options.zoomSpeed, .001);
+	var _yUp = defined(options.yUp, true);
+	var _rotateActive = defined(options.rotateActive, false);
+	var _rotateActiveOnlyInPointerLock = defined(options.rotateActiveOnlyInPointerLock, true);
+	var _arrowKeysRotate = defined(options.arrowKeysRotate, false);
+	var _movementSpeedScale = 1;
+	if(!_rotateActiveOnlyInPointerLock) _rotateActive = true;
 
-	//mouse
-	this.pointerTrap.on('data', function(pos) {
-		if(_this.rotateActive) {
-			_this.camera.rotateY(pos.x * -_this.rotationSpeed);
-			_this.camera.rotateX(pos.y * -_this.rotationSpeed);
-			if(_this.yUp) {
-				_this.uprightCamera();
+	var _pointerTrap = new PointerTrap(element);
+
+	function onPointerTrapData(pos) {
+		if(_rotateActive) {
+			_camera.rotateY(pos.x * -_rotationSpeed);
+			_camera.rotateX(pos.y * -_rotationSpeed);
+			if(_yUp) {
+				uprightCamera();
 			}
 		}
-	})
+	}
+	//mouse
+	_pointerTrap.on('data', onPointerTrapData);
 
-	this.pointerTrap.onAttainSignal.add(function() {
-		if(_this.rotateActiveOnlyInPointerLock) _this.rotateActive = true;
+	_pointerTrap.onAttainSignal.add(function() {
+		if(_rotateActiveOnlyInPointerLock) _rotateActive = true;
 	})
-	this.pointerTrap.onReleaseSignal.add(function() {
-		if(_this.rotateActiveOnlyInPointerLock) _this.rotateActive = false;
+	_pointerTrap.onReleaseSignal.add(function() {
+		if(_rotateActiveOnlyInPointerLock) _rotateActive = false;
 	})
-	this.onPointerLockAttainSignal = this.pointerTrap.onAttainSignal;
-	this.onPointerLockReleaseSignal = this.pointerTrap.onReleaseSignal;
+	var _onPointerLockAttainSignal = _pointerTrap.onAttainSignal;
+	var _onPointerLockReleaseSignal = _pointerTrap.onReleaseSignal;
 
-	//mouse wheel
-	Mousewheel.onMouseWheelSignal.add(function(val) {
-		var zoom = val * _this.zoomSpeed;
-		var fov = _this.camera.fov;
+	var zoom, fov;
+	function zoomOnMouseWheel(val) {
+		zoom = val * _zoomSpeed;
+		fov = _camera.fov;
 		fov *= (1+zoom);
-		fov = Math.min(_this.maxFov, Math.max(_this.minFov, fov))
-		_this.camera.fov = fov;
-		_this.camera.updateProjectionMatrix();
-	});
+		fov = Math.min(_maxFov, Math.max(_minFov, fov))
+		_camera.fov = fov;
+		_camera.updateProjectionMatrix();
+		if(_onChangedCallback) _onChangedCallback();
+	}
+	//mouse wheel
+	Mousewheel.onMouseWheelSignal.add(zoomOnMouseWheel);
 
 	//yUp
-	if(this.yUp) {
-		this._lookAtTarget = this.camera.clone();
+	if(_yUp) {
+		_lookAtTarget = _camera.clone();
 	}
-}
 
-FPSCameraController.prototype = {
-	update: function() {
-		var rotated = false;
-		if(this.keyboard.isPressed('shift')) {
-			this._movementSpeedScale = this.movementRunSpeedScale;
+	var rotated, moved;
+	function update() {
+		rotated = false;
+		moved = false;
+		if(_keyboard.isPressed('shift')) {
+			moved = true;
+			_movementSpeedScale = _movementRunSpeedScale;
 		} else {
-			this._movementSpeedScale = 1;
+			moved = true;
+			_movementSpeedScale = 1;
 		}
-		if(this.keyboard.isPressed('a')) {
-			this.camera.translateX(-this.movementSpeed * this._movementSpeedScale);
+		if(_keyboard.isPressed('a')) {
+			moved = true;
+			_camera.translateX(-_movementSpeed * _movementSpeedScale);
 		}
-		if(this.keyboard.isPressed('d')) {
-			this.camera.translateX(this.movementSpeed * this._movementSpeedScale);
+		if(_keyboard.isPressed('d')) {
+			moved = true;
+			_camera.translateX(_movementSpeed * _movementSpeedScale);
 		}
-		if(this.keyboard.isPressed('w')) {
-			this.camera.translateZ(-this.movementSpeed * this._movementSpeedScale);
+		if(_keyboard.isPressed('w')) {
+			moved = true;
+			_camera.translateZ(-_movementSpeed * _movementSpeedScale);
 		}
-		if(this.keyboard.isPressed('s')) {
-			this.camera.translateZ(this.movementSpeed * this._movementSpeedScale);
+		if(_keyboard.isPressed('s')) {
+			moved = true;
+			_camera.translateZ(_movementSpeed * _movementSpeedScale);
 		}
-		if(this.keyboard.isPressed('e')) {
-			this.camera.position.y += (this.movementSpeed * this._movementSpeedScale);
+		if(_keyboard.isPressed('e')) {
+			moved = true;
+			_camera.position.y += (_movementSpeed * _movementSpeedScale);
 		}
-		if(this.keyboard.isPressed('q')) {
-			this.camera.position.y += (-this.movementSpeed * this._movementSpeedScale);
+		if(_keyboard.isPressed('q')) {
+			moved = true;
+			_camera.position.y += (-_movementSpeed * _movementSpeedScale);
 		}
-		if(this.arrowKeysRotate) {
-			if(this.keyboard.isPressed('left')) {
-				this.camera.rotateY(this.rotationSpeed);
+		if(_arrowKeysRotate) {
+			if(_keyboard.isPressed('left')) {
+				_camera.rotateY(_rotationSpeed);
 				rotated = true;
 			}
-			if(this.keyboard.isPressed('right')) {
-				this.camera.rotateY(-this.rotationSpeed);
+			if(_keyboard.isPressed('right')) {
+				_camera.rotateY(-_rotationSpeed);
 				rotated = true;
 			}
-			if(this.keyboard.isPressed('up')) {
-				this.camera.rotateX(this.rotationSpeed);
+			if(_keyboard.isPressed('up')) {
+				_camera.rotateX(_rotationSpeed);
 				rotated = true;
 			}
-			if(this.keyboard.isPressed('down')) {
-				this.camera.rotateX(-this.rotationSpeed);
+			if(_keyboard.isPressed('down')) {
+				_camera.rotateX(-_rotationSpeed);
 				rotated = true;
 			}
-			if(rotated && this.yUp) {
-				this.uprightCamera();
+			if(rotated && _yUp) {
+				uprightCamera();
 			}
 		}
-	},
-	uprightCamera: function() {
-		this._lookAtTarget.position.copy(this.camera.position);
-		this._lookAtTarget.rotation.copy(this.camera.rotation);
-		this._lookAtTarget.translateZ(-1);
-		this.camera.lookAt(this._lookAtTarget.position);
+		if((moved || rotated) && _onChangedCallback) {
+			_onChangedCallback();
+			moved = rotated = false;
+		}
 	}
+
+	function uprightCamera() {
+		_lookAtTarget.position.copy(_camera.position);
+		_lookAtTarget.rotation.copy(_camera.rotation);
+		_lookAtTarget.translateZ(-1);
+		_camera.lookAt(_lookAtTarget.position);
+	}
+	//public
+	this.onPointerLockAttainSignal = _onPointerLockAttainSignal;
+	this.onPointerLockReleaseSignal = _onPointerLockReleaseSignal;
+	this.update = update;
 }
 
 module.exports = FPSCameraController;
