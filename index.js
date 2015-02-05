@@ -136,6 +136,9 @@ function FPSCameraController(camera, element, options) {
 	this.onPointerLockReleaseSignal = _onPointerLockReleaseSignal;
 	this.update = update;
 
+	Object.defineProperty(this, 'keyboard', {
+		get: function() { return _keyboard; }
+	});
 	Object.defineProperty(this, 'movementSpeed', {
 		get: function() { return _movementSpeed; },
 		set: function(val) { _movementSpeed = val; }
