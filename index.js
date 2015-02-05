@@ -135,6 +135,19 @@ function FPSCameraController(camera, element, options) {
 	this.onPointerLockAttainSignal = _onPointerLockAttainSignal;
 	this.onPointerLockReleaseSignal = _onPointerLockReleaseSignal;
 	this.update = update;
+
+	Object.defineProperty(this, 'movementSpeed', {
+		get: function() { return _movementSpeed; },
+		set: function(val) { _movementSpeed = val; }
+	});
+	Object.defineProperty(this, 'rotationSpeed', {
+		get: function() { return _rotationSpeed; },
+		set: function(val) { _rotationSpeed = val; }
+	});
+	Object.defineProperty(this, 'zoomSpeed', {
+		get: function() { return _zoomSpeed; },
+		set: function(val) { _zoomSpeed = val; }
+	});
 }
 
 module.exports = FPSCameraController;
