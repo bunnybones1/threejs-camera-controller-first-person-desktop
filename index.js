@@ -1,12 +1,13 @@
 var Keyboard = require('game-keyboard');
 var keyMap = require("game-keyboard/key_map")["US"];
 var PointerTrap = require('pointer-trap-relative');
-var Mousewheel = require('input-mousewheel');
+var MouseWheel = require('input-mousewheel');
 var defined = require('defined');
 function FPSCameraController(camera, element, options) {
 	options = options || {};
 	var _camera = camera;
 	var _keyboard = new Keyboard(keyMap);
+	var _mouseWheel = new MouseWheel(element);
 
 	var _onChangedCallback = options.onChangedCallback;
 	var _movementSpeed = defined(options.movementSpeed, .1);
@@ -56,7 +57,7 @@ function FPSCameraController(camera, element, options) {
 		if(_onChangedCallback) _onChangedCallback();
 	}
 	//mouse wheel
-	Mousewheel.onMouseWheelSignal.add(zoomOnMouseWheel);
+	_mouseWheel.onWheelSignal.add(zoomOnMouseWheel);
 
 	//yUp
 	if(_yUp) {
