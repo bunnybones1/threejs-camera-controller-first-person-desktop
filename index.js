@@ -24,6 +24,8 @@ function FPSCameraController(camera, element, options) {
 	if(!_rotateActiveOnlyInPointerLock) _rotateActive = true;
 
 	var _pointerTrap = new PointerTrap(element);
+	
+	var rotated, moved;
 
 	function onPointerTrapData(pos) {
 		if(_rotateActive) {
@@ -32,6 +34,7 @@ function FPSCameraController(camera, element, options) {
 			if(_yUp) {
 				uprightCamera();
 			}
+			rotated = true;
 		}
 	}
 	//mouse
@@ -64,15 +67,10 @@ function FPSCameraController(camera, element, options) {
 		_lookAtTarget = _camera.clone();
 	}
 
-	var rotated, moved;
 	function update() {
-		rotated = false;
-		moved = false;
 		if(_keyboard.isPressed('shift')) {
-			moved = true;
 			_movementSpeedScale = _movementRunSpeedScale;
 		} else {
-			moved = true;
 			_movementSpeedScale = 1;
 		}
 		if(_keyboard.isPressed('a')) {
