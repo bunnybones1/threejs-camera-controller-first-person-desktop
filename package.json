@@ -1,6 +1,6 @@
 {
   "name": "threejs-camera-controller-first-person-desktop",
-  "version": "5.0.1",
+  "version": "6.0.0",
   "description": "A camera controller for web-browser friendly FPS controls using a keyboard and mouse.",
   "main": "index.js",
   "license": "MIT",
