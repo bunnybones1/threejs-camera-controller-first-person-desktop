@@ -25,7 +25,7 @@ function FPSCameraController(camera, element, options) {
 
 	var _pointerTrap = new PointerTrap(element);
 	
-	var rotated, moved;
+	var rotated, moved, _lookAtTarget;
 
 	function onPointerTrapData(pos) {
 		if(_rotateActive) {
