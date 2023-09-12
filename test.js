@@ -28,13 +28,20 @@ for (var i = 0; i < 1200; i++) {
 
 var fpsController = new CameraControllerFPS(view.camera, view.canvasContainer);
 
-fpsController.onPointerLockAttainSignal.add(function(){
-	console.log('attained pointerlock');
-})
-fpsController.onPointerLockReleaseSignal.add(function(){
-	console.log('released pointerlock');
-})
-
+document.addEventListener('pointerlockchange', onLockChanged, false);
+function onLockChanged() {
+	if (document.pointerLockElement === view.canvasContainer) {
+		console.log('attained pointerlock');
+	} else if (document.pointerLockElement) {
+		console.log('attained pointerlock on some other element');
+	 }  else{
+		console.log('released pointerlock');
+	}
+}
 view.renderManager.onEnterFrame.add(function() {
 	fpsController.update();
+})
+
+document.addEventListener('click', function () {
+	fpsController.lock();
 })
