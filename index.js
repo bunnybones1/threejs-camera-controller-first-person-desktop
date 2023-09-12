@@ -1,6 +1,5 @@
 var Keyboard = require('game-keyboard');
 var keyMap = require("game-keyboard/key_map")["US"];
-var PointerTrap = require('pointer-trap-relative');
 var MouseWheel = require('input-mousewheel');
 var defined = require('defined');
 function FPSCameraController(camera, element, options) {
@@ -22,32 +21,36 @@ function FPSCameraController(camera, element, options) {
 	var _arrowKeysRotate = defined(options.arrowKeysRotate, false);
 	var _movementSpeedScale = 1;
 	if(!_rotateActiveOnlyInPointerLock) _rotateActive = true;
-
-	var _pointerTrap = new PointerTrap(element);
 	
 	var rotated, moved, _lookAtTarget;
 
-	function onPointerTrapData(pos) {
+	function onMouseMove(e) {
 		if(_rotateActive) {
-			_camera.rotateY(pos.x * -_rotationSpeed);
-			_camera.rotateX(pos.y * -_rotationSpeed);
+			_camera.rotateY(e.movementX * -_rotationSpeed);
+			_camera.rotateX(e.movementY * -_rotationSpeed);
 			if(_yUp) {
 				uprightCamera();
 			}
 			rotated = true;
 		}
 	}
+	function onLockChanged() {
+		_rotateActive = document.pointerLockElement === element;
+	}
+	document.addEventListener("mousemove", onMouseMove, false);
+	if (_rotateActiveOnlyInPointerLock) {
+		document.addEventListener('pointerlockchange', onLockChanged, false);
+	}
 	//mouse
-	_pointerTrap.on('data', onPointerTrapData);
+	var _lock = function() {
+		if(!document.pointerLockElement) {
+			element.requestPointerLock()
+		}
+	}
+	var _unlock = function() {
+		document.exitPointerLock();
+	};
 
-	_pointerTrap.onAttainSignal.add(function() {
-		if(_rotateActiveOnlyInPointerLock) _rotateActive = true;
-	})
-	_pointerTrap.onReleaseSignal.add(function() {
-		if(_rotateActiveOnlyInPointerLock) _rotateActive = false;
-	})
-	var _onPointerLockAttainSignal = _pointerTrap.onAttainSignal;
-	var _onPointerLockReleaseSignal = _pointerTrap.onReleaseSignal;
 
 	var zoom, fov;
 	function zoomOnMouseWheel(val) {
@@ -131,8 +134,8 @@ function FPSCameraController(camera, element, options) {
 		_camera.lookAt(_lookAtTarget.position);
 	}
 	//public
-	this.onPointerLockAttainSignal = _onPointerLockAttainSignal;
-	this.onPointerLockReleaseSignal = _onPointerLockReleaseSignal;
+	this.lock = _lock;
+	this.unlock = _unlock;
 	this.update = update;
 
 	Object.defineProperty(this, 'keyboard', {
